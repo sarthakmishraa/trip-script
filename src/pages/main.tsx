@@ -1,9 +1,19 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+interface countriesType {
+    iso2: string,
+    iso3: string,
+    country: string,
+    cities:string[]
+}
 
 export const Main = () => {
     const [budget, setBudget] = useState<string>("");
-    const [destination, setDestination] = useState<string>("");
+    const [currCity, setCurrCity] = useState<string>("");
+    const [currCountry, setCurrCountry] = useState<string>("");
+    const [destinationCity, setDestinationCity] = useState<string>("");
+    const [destinationCountry, setDestinationCountry] = useState<string>("");
     const [transportation, setTransportation] = useState<string>("");
     const [text, setText] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
@@ -13,11 +23,27 @@ export const Main = () => {
     const [toDay, setToDay] = useState<string>("");
     const [toMonth, setToMonth] = useState<string>("");
     const [toYear, setToYear] = useState<string>("");
+    const [countries, setCountries] = useState<countriesType[]>([]);
+    const [cities, setCities] = useState<string[]>([]);
 
 
     const apikey:string = process.env.REACT_APP_apikey!;
     const genAI = new GoogleGenerativeAI(apikey);
 
+    const getCountries = async() => {
+        try {
+            const countries = await fetch("https://countriesnow.space/api/v0.1/countries").then(res => res.json());
+            setCountries(countries.data);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getCities = (country:string) => {
+        const Cities = countries.find((countryObj) => countryObj.country === country);
+        setCities(Cities?.cities!);
+    }
 
     const getResponse = async () => {
         try {
@@ -28,7 +54,8 @@ export const Main = () => {
             I will provide you budget, destination, travel dates, mode of transportation \
             and you have to tell travel itenary. Please find the information below: \
             budget: ${budget}\
-            destination: ${destination}\
+            current location: ${"".concat(currCity, " ", currCountry)}\
+            destination: ${"".concat(destinationCity,", ", destinationCountry)}\
             travel dates from: ${"".concat(fromMonth, " ", fromDay, " ", fromYear)}\
             travel dates to: ${"".concat(toMonth, " ", toDay, " ", toYear)}\
             mode of transportation: ${transportation}\
@@ -43,23 +70,59 @@ export const Main = () => {
             console.log(error);
         }
     }
+
+    useEffect(() => {
+        getCountries();
+    }, []);
+
     return(
         <div className="sm:px-32 md:px-64 xl:px-96 space-y-[20px] space-x-2 text-center">
             <h1 className="text-xl">Welcome to TripScript, your personalized travel planner! To craft your ideal itinerary, please provide:</h1>
 
-            <div className="xl:flex flex-row space-y-2 space-x-2">
-                <h1 className="text-semibold text-lg">Budget (in your currency)</h1>
-                <input type="text" placeholder="Enter your budget" onChange={(e) => setBudget(e.target.value)} className="border-2 border-gray-600 rounded-md h-[30px] p-1" />
-                <h1 className="text-semibold text-lg">Going from</h1>
-                <input type="text" placeholder="Enter your current location" onChange={(e) => setDestination(e.target.value)} className="border-2 border-gray-600 rounded-md h-[30px] p-1" />
-                <h1 className="text-semibold text-lg">Going to</h1>
-                <input type="text" placeholder="Enter your destination" onChange={(e) => setDestination(e.target.value)} className="border-2 border-gray-600 rounded-md h-[30px] p-1" />
+            <div className="xl:flex flex-col space-y-2 space-x-2">
+                <div>
+                    <h1 className="text-semibold text-lg">Budget (in your currency)</h1>
+                    <input type="text" placeholder="Enter your budget" onChange={(e) => setBudget(e.target.value)} className="border-2 border-gray-600 rounded-md h-[30px] p-1" />
+                </div>
+                
+                <div className="space-x-2 space-y-1">
+                    <h1 className="text-semibold text-lg">Going from</h1>
+                    <select onChange={(event) => {getCities(event.target.value); setCurrCountry(event.target.value)}} className="border-2 border-gray-600 rounded-md p-1" >
+                        <option selected hidden disabled>Select your current country</option>
+                        { countries.map((country) => (
+                            <option key={`${country.country}`} value={country.country} >{ country.country }</option>
+                        )) }
+                    </select>
+                    <select onChange={(event) => setCurrCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1" >
+                        <option disabled selected hidden>Select your current city</option>
+                        {cities.map((city) => (
+                            <option key={`${city}`} value={city} >{ city }</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="space-x-2 space-y-1">
+                    <h1 className="text-semibold text-lg">Going to</h1>
+                    <select onChange={(event) => {getCities(event.target.value); setDestinationCountry(event.target.value)}} className="border-2 border-gray-600 rounded-md p-1" >
+                        <option selected hidden disabled>Select your destination country</option>
+                        { countries.map((country) => (
+                            <option key={`${country.country}`} value={country.country} >{ country.country }</option>
+                        )) }
+                    </select>
+                    <select onChange={(event) => setDestinationCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1" >
+                        <option disabled selected hidden>Select your destination city</option>
+                        {cities.map((city) => (
+                            <option key={`${city}`} value={city} >{ city }</option>
+                        ))}
+                    </select>
+                </div>
+            
             </div>
             
-            <div className="xl:flex flex-row items-center space-y-2 space-x-2">
+            <div className="xl:flex flex-row justify-center items-center space-y-2 space-x-2">
                 <h1>Travel Dates</h1>
                 <select id="from-month" onChange={ (event) => setFromMonth(event.target.value) } className="border-2 border-gray-600 rounded-md p-1" >
-                    <option value={0} disabled selected>Month</option>
+                    <option selected hidden disabled>Month</option>
                     <option value="Jan">Jan</option>
                     <option value="Feb">Feb</option>
                     <option value="Mar">Mar</option>
@@ -74,7 +137,7 @@ export const Main = () => {
                     <option value="Dec">Dec</option>
                 </select>
                 <select id="from-day" onChange={ (event) => setFromDay(event.target.value) } className="border-2 border-gray-600 rounded-md p-1" >
-                    <option value={0} disabled selected>Day</option>
+                    <option selected hidden disabled>Day</option>
                     <option value={1}>01</option>
                     <option value={2}>02</option>
                     <option value={3}>03</option>
@@ -108,13 +171,13 @@ export const Main = () => {
                     <option value={31}>31</option>
                 </select>
                 <select id="from-year" onChange={ (event) => setFromYear(event.target.value) } className="border-2 border-gray-600 rounded-md p-1" >
-                    <option value={0} disabled selected>Year</option>
+                    <option selected hidden disabled>Year</option>
                     <option value={2024}>2024</option>
                     <option value={2025}>2025</option>
                 </select>
                 <h1>To</h1>
                 <select id="to-month" onChange={ (event) => setToMonth(event.target.value) } className="border-2 border-gray-600 rounded-md p-1" >
-                    <option value={0} disabled selected>Month</option>
+                    <option selected hidden disabled>Month</option>
                     <option value="Jan">Jan</option>
                     <option value="Feb">Feb</option>
                     <option value="Mar">Mar</option>
@@ -129,7 +192,7 @@ export const Main = () => {
                     <option value="Dec">Dec</option>
                 </select>
                 <select id="to-day" onChange={ (event) => setToDay(event.target.value) } className="border-2 border-gray-600 rounded-md p-1" >
-                    <option value={0} disabled selected>Day</option>
+                    <option selected hidden disabled>Day</option>
                     <option value={1}>01</option>
                     <option value={2}>02</option>
                     <option value={3}>03</option>
@@ -163,7 +226,7 @@ export const Main = () => {
                     <option value={31}>31</option>
                 </select>
                 <select id="to-year" onChange={ (event) => setToYear(event.target.value) } className="border-2 border-gray-600 rounded-md p-1" >
-                    <option value={0} disabled selected>Year</option>
+                    <option selected hidden disabled>Year</option>
                     <option value={2024}>2024</option>
                     <option value={2025}>2025</option>
                 </select>
@@ -182,6 +245,10 @@ export const Main = () => {
                         <label htmlFor="train">Train</label>
                     </div>
                     <div className="flex flex-col">
+                        <input type="radio" id="bus" value="bus" name="transportation" onChange={ (event) => setTransportation(event.target.value) } className="w-6 h-6 ring-inset focus:ring-4 ring-green-600" />
+                        <label htmlFor="bus">Bus</label>
+                    </div>
+                    <div className="flex flex-col">
                         <input type="radio" id="car" value="car" name="transportation" onChange={ (event) => setTransportation(event.target.value) } className="w-6 h-6 ring-inset focus:ring-4 ring-green-600" />
                         <label htmlFor="car">Car</label>
                     </div>
@@ -191,9 +258,9 @@ export const Main = () => {
             {
                 loading && (
                     text ? (
-                        <p>{ text }</p>
+                        <p className="text-lg font-semibold">{ text }</p>
                     ):(
-                        <p>Loading...</p>
+                        <p className="text-xl font-semibold">Loading...</p>
                     )
                 )
             }
