@@ -24,7 +24,8 @@ export const Main = () => {
     const [toMonth, setToMonth] = useState<string>("");
     const [toYear, setToYear] = useState<string>("");
     const [countries, setCountries] = useState<countriesType[]>([]);
-    const [cities, setCities] = useState<string[]>([]);
+    const [destinationCities, setDestinationCities] = useState<string[]>([]);
+    const [currLocCities, setCurrLocCities] = useState<string[]>([]);
 
 
     const apikey:string = process.env.REACT_APP_apikey!;
@@ -40,10 +41,15 @@ export const Main = () => {
         }
     };
 
-    const getCities = (country:string) => {
+    const getCities = (country:string, isCurrentCountry: boolean) => {
         const Cities = countries.find((countryObj) => countryObj.country === country);
-        setCities(Cities?.cities!);
-    }
+        if (isCurrentCountry) {
+            setCurrLocCities(Cities?.cities!);
+        }
+        else {
+            setDestinationCities(Cities?.cities!);
+        }
+    };
 
     const getResponse = async () => {
         try {
@@ -87,34 +93,46 @@ export const Main = () => {
                 
                 <div className="space-x-2 space-y-1">
                     <h1 className="text-semibold text-lg">Going from</h1>
-                    <select onChange={(event) => {getCities(event.target.value); setCurrCountry(event.target.value)}} className="border-2 border-gray-600 rounded-md p-1" >
-                        <option selected hidden disabled>Select your current country</option>
-                        { countries.map((country) => (
-                            <option key={`${country.country}`} value={country.country} >{ country.country }</option>
-                        )) }
-                    </select>
-                    <select onChange={(event) => setCurrCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1" >
-                        <option disabled selected hidden>Select your current city</option>
-                        {cities.map((city) => (
-                            <option key={`${city}`} value={city} >{ city }</option>
-                        ))}
-                    </select>
+                    {
+                        countries &&
+                        <select onChange={(event) => {getCities(event.target.value, true); setCurrCountry(event.target.value)}} className="border-2 border-gray-600 rounded-md p-1" >
+                            <option selected hidden disabled>Select your current country</option>
+                            { countries.map((country) => (
+                                <option key={`${country.country}`} value={country.country} >{ country.country }</option>
+                            )) }
+                        </select>
+                    }
+                    {
+                        currLocCities &&
+                        <select onChange={(event) => setCurrCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1" >
+                            <option disabled selected hidden>Select your current city</option>
+                            {currLocCities.map((city) => (
+                                <option key={`${city}`} value={city} >{ city }</option>
+                            ))}
+                        </select>
+                    }
                 </div>
 
                 <div className="space-x-2 space-y-1">
                     <h1 className="text-semibold text-lg">Going to</h1>
-                    <select onChange={(event) => {getCities(event.target.value); setDestinationCountry(event.target.value)}} className="border-2 border-gray-600 rounded-md p-1" >
-                        <option selected hidden disabled>Select your destination country</option>
-                        { countries.map((country) => (
-                            <option key={`${country.country}`} value={country.country} >{ country.country }</option>
-                        )) }
-                    </select>
-                    <select onChange={(event) => setDestinationCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1" >
-                        <option disabled selected hidden>Select your destination city</option>
-                        {cities.map((city) => (
-                            <option key={`${city}`} value={city} >{ city }</option>
-                        ))}
-                    </select>
+                    {
+                        countries &&
+                        <select onChange={(event) => {getCities(event.target.value, false); setDestinationCountry(event.target.value)}} className="border-2 border-gray-600 rounded-md p-1" >
+                            <option selected hidden disabled>Select your destination country</option>
+                            { countries.map((country) => (
+                                <option key={`${country.country}`} value={country.country} >{ country.country }</option>
+                            )) }
+                        </select>
+                    }
+                    {
+                        destinationCities &&
+                        <select onChange={(event) => setDestinationCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1" >
+                            <option disabled selected hidden>Select your destination city</option>
+                            {destinationCities.map((city) => (
+                                <option key={`${city}`} value={city} >{ city }</option>
+                            ))}
+                        </select>
+                    }
                 </div>
             
             </div>
