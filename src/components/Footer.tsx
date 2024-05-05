@@ -5,6 +5,7 @@ export const Footer = () => {
         <div className="flex justify-between fixed bottom-0 w-[100%] bg-green-300 sm:px-32 md:px-64 xl:px-96 flex flex-row font-semibold space-x-5 pt-2 pb-5">
             <div className="">
                 <Link to="/" className="text-2xl hover:border-b-4 border-green-400">TripScript</Link>
+                <p>Budget-Friendly Trips Made Simple</p>
             </div>
             <div className="">
                 <p className="text-lg">My Other Projects</p>
