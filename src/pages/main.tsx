@@ -119,7 +119,7 @@ export const Main = () => {
                         </select>
                     }
                     {
-                        currLocCities.length>1 || currLocCities.length===0 ? (
+                        currLocCities.length>1 ? (
                             <select onChange={(event) => setCurrCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1" >
                                 <option disabled selected hidden>Select your current city</option>
                                 {currLocCities.map((city) => (
@@ -144,7 +144,7 @@ export const Main = () => {
                         </select>
                     }
                     {
-                        destinationCities.length>1 || destinationCities.length===0  ? (
+                        destinationCities.length>1 ? (
                             <select onChange={(event) => setDestinationCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1" >
                                 <option disabled selected hidden>Select your destination city</option>
                                 {destinationCities.map((city) => (
