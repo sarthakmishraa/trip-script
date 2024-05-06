@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { BudgetConverter } from "../../components/BudgetConverter"
 
 interface countriesType {
     iso2: string;
@@ -103,58 +104,60 @@ export const Main = () => {
 
     return(
         <div className="sm:px-32 md:px-64 xl:px-96 space-y-[20px] space-x-2 text-center">
-                <h1 className="text-xl">Welcome to TripScript, your personalized travel planner! To craft your ideal itinerary, please provide:</h1>
-                <div className="xl:flex flex-col space-y-2 space-x-2">
-            <div>
-                <h1 className="text-semibold text-lg">Budget (in USD)</h1>
-                <input type="number" placeholder="Enter your budget" onChange={(e) => setBudget(e.target.value)} className="border-2 border-gray-600 rounded-md h-[30px] p-1 focus:ring-4 ring-green-400" />
+            <h1 className="text-xl">Welcome to TripScript, your personalized travel planner! To craft your ideal itinerary, please provide:</h1>
+            <div className="float-right">
+                <BudgetConverter />
             </div>
-            
-            <div className="space-x-2 space-y-2">
-                <h1 className="text-semibold text-lg">Going from</h1>
-                {
-                    countries &&
-                    <select onChange={(event) => {getCities(event.target.value, true); setCurrCountry(event.target.value);}} className="border-2 border-gray-600 rounded-md p-1 focus:ring-4 ring-green-400" >
-                        <option selected hidden disabled>Select your current country</option>
-                        { countries.map((country) => (
-                            <option key={`${country.country}`} value={country.country} >{ country.country }</option>
-                        )) }
-                    </select>
-                }
-                {
-                    currLocCities &&
-                    <select onChange={(event) => setCurrCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1 focus:ring-4 ring-green-400" >
-                        <option disabled selected hidden>Select your current city</option>
-                        {currLocCities.map((city) => (
-                            <option key={`${city}`} value={city} >{ city }</option>
-                        ))}
-                    </select>
-                }
-            </div>
+            <div className="xl:flex flex-col space-y-2 space-x-2">
+                <div className="">
+                    <h1 className="text-semibold text-lg">Budget (in USD)</h1>
+                    <input type="number" placeholder="Enter your budget" onChange={(e) => setBudget(e.target.value)} className="border-2 border-gray-600 rounded-md h-[30px] p-1 focus:ring-4 ring-green-400" />
+                </div>
+                <div className="space-x-2 space-y-2">
+                    <h1 className="text-semibold text-lg">Going from</h1>
+                    {
+                        countries &&
+                        <select onChange={(event) => {getCities(event.target.value, true); setCurrCountry(event.target.value);}} className="border-2 border-gray-600 rounded-md p-1 focus:ring-4 ring-green-400" >
+                            <option selected hidden disabled>Select your current country</option>
+                            { countries.map((country) => (
+                                <option key={`${country.country}`} value={country.country} >{ country.country }</option>
+                            )) }
+                        </select>
+                    }
+                    {
+                        currLocCities &&
+                        <select onChange={(event) => setCurrCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1 focus:ring-4 ring-green-400" >
+                            <option disabled selected hidden>Select your current city</option>
+                            {currLocCities.map((city) => (
+                                <option key={`${city}`} value={city} >{ city }</option>
+                            ))}
+                        </select>
+                    }
+                </div>
 
-            <div className="space-x-2 space-y-2">
-                <h1 className="text-semibold text-lg">Going to</h1>
-                {
-                    countries &&
-                    <select onChange={(event) => {getCities(event.target.value, false); setDestinationCountry(event.target.value);}} className="border-2 border-gray-600 rounded-md p-1 focus:ring-4 ring-green-400" >
-                        <option selected hidden disabled>Select your destination country</option>
-                        { countries.map((country) => (
-                            <option key={`${country.country}`} value={country.country} >{ country.country }</option>
-                        )) }
-                    </select>
-                }
-                {
-                    destinationCities &&
-                    <select onChange={(event) => setDestinationCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1 focus:ring-4 ring-green-400" >
-                        <option disabled selected hidden>Select your destination city</option>
-                        {destinationCities.map((city) => (
-                            <option key={`${city}`} value={city} >{ city }</option>
-                        ))}
-                    </select>
-                }
+                <div className="space-x-2 space-y-2">
+                    <h1 className="text-semibold text-lg">Going to</h1>
+                    {
+                        countries &&
+                        <select onChange={(event) => {getCities(event.target.value, false); setDestinationCountry(event.target.value);}} className="border-2 border-gray-600 rounded-md p-1 focus:ring-4 ring-green-400" >
+                            <option selected hidden disabled>Select your destination country</option>
+                            { countries.map((country) => (
+                                <option key={`${country.country}`} value={country.country} >{ country.country }</option>
+                            )) }
+                        </select>
+                    }
+                    {
+                        destinationCities &&
+                        <select onChange={(event) => setDestinationCity(event.target.value)} className="border-2 border-gray-600 rounded-md p-1 focus:ring-4 ring-green-400" >
+                            <option disabled selected hidden>Select your destination city</option>
+                            {destinationCities.map((city) => (
+                                <option key={`${city}`} value={city} >{ city }</option>
+                            ))}
+                        </select>
+                    }
+                </div>
+            
             </div>
-        
-        </div>
         <div className="xl:flex flex-row justify-center items-center space-y-2 space-x-2">
             <h1>Travel Dates</h1>
             <select id="from-month" onChange={ (event) => setFromMonth(event.target.value) } className="border-2 border-gray-600 rounded-md p-1 focus:ring-4 ring-green-400" >
