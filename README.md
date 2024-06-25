@@ -13,6 +13,13 @@ Trip Script is a web application designed to simplify travel planning by allowin
 
 ## Snippets
 
+<h3> Trip Script Landing Page </h3>
+<img src="./src/media/img1.png" alt="TripScript Snip" width="600" />
+<h3> Sample Response Page 1.1 </h3>
+<img src="./src/media/img2.png" alt="TripScript Snip" width="600" />
+<h3> Sample Response Page 1.2 </h3>
+<img src="./src/media/img3.png" alt="TripScript Snip" width="600" />
+
 ## Tech Used
 - TypeScript
 - Tailwind CSS
